@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image"
 	"image/color"
+	"image/draw"
 	"image/png"
 	"os"
 )
@@ -19,7 +20,7 @@ func abort(msg string) {
 }
 
 type CanvasAdapter struct {
-	*image.RGBA
+	draw.Image
 }
 
 func (ca *CanvasAdapter) Width() int {
