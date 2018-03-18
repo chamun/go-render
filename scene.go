@@ -48,6 +48,7 @@ func (r *Ray) IntersectSphere(s Sphere) (float64, float64) {
 
 type Scene struct {
 	spheres []Sphere
+	bgColor color.Color
 }
 
 // Render renders the scene to Canvas c
@@ -65,10 +66,10 @@ func (scene *Scene) Render(c Canvas) {
 
 // traceRay returns the color of the object r hits given that the intersection
 // point lies on interval [tmin, tmax] of r. If there is no intersection, it
-// returns the color white.
+// returns the scene's background color.
 func (scene *Scene) traceRay(r Ray, tmin, tmax float64) color.Color {
 	closest_t := math.Inf(1)
-	closest_sphere := Sphere{color: white}
+	closest_sphere := Sphere{color: scene.bgColor}
 	for _, sphere := range scene.spheres {
 		t1, t2 := r.IntersectSphere(sphere)
 		if t1 >= tmin && t1 <= tmax && t1 < closest_t {
