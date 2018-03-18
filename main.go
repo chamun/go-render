@@ -14,11 +14,6 @@ var green = color.RGBA{0, 255, 0, 255}
 var blue = color.RGBA{0, 0, 255, 255}
 var white = color.RGBA{255, 255, 255, 255}
 
-func abort(msg string) {
-	fmt.Println(msg)
-	os.Exit(1)
-}
-
 type CanvasAdapter struct {
 	draw.Image
 }
@@ -34,7 +29,8 @@ func (ca *CanvasAdapter) Height() int {
 func main() {
 	f, err := os.Create("out/image.png")
 	if err != nil {
-		abort("Could not create the image file")
+		fmt.Println("Could not create the image file")
+		os.Exit(1)
 	}
 	defer f.Close()
 
