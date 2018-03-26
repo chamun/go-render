@@ -14,7 +14,19 @@ type Canvas interface {
 type Sphere struct {
 	c     Vector
 	r     float64
-	color color.Color
+	color Color
+}
+
+// Color is a vector that implements the color.Color interface
+type Color Vector
+
+// RGBA clamps the color components to 255 and delegates the conversion to
+// color.RGBA.RGBA()
+func (c Color) RGBA() (uint32, uint32, uint32, uint32) {
+	r := uint8(math.Min(c.X, 255))
+	g := uint8(math.Min(c.Y, 255))
+	b := uint8(math.Min(c.Z, 255))
+	return color.RGBA{r, g, b, 255}.RGBA()
 }
 
 // Ray is the line that passes through point O in direction D
@@ -48,7 +60,7 @@ func (r *Ray) IntersectSphere(s Sphere) (float64, float64) {
 
 type Scene struct {
 	spheres []Sphere
-	bgColor color.Color
+	bgColor Color
 }
 
 // Render renders the scene to Canvas c
@@ -67,7 +79,7 @@ func (scene *Scene) Render(c Canvas) {
 // traceRay returns the color of the object r hits given that the intersection
 // point lies on interval [tmin, tmax] of r. If there is no intersection, it
 // returns the scene's background color.
-func (scene *Scene) traceRay(r Ray, tmin, tmax float64) color.Color {
+func (scene *Scene) traceRay(r Ray, tmin, tmax float64) Color {
 	closest_t := math.Inf(1)
 	closest_sphere := Sphere{color: scene.bgColor}
 	for _, sphere := range scene.spheres {

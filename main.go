@@ -3,16 +3,15 @@ package main
 import (
 	"fmt"
 	"image"
-	"image/color"
 	"image/draw"
 	"image/png"
 	"os"
 )
 
-var red = color.RGBA{255, 0, 0, 255}
-var green = color.RGBA{0, 255, 0, 255}
-var blue = color.RGBA{0, 0, 255, 255}
-var white = color.RGBA{255, 255, 255, 255}
+var red = Color{255, 0, 0}
+var green = Color{0, 255, 0}
+var blue = Color{0, 0, 255}
+var white = Color{255, 255, 255}
 
 type CanvasAdapter struct {
 	draw.Image
