@@ -81,18 +81,24 @@ func (scene *Scene) Render(c Canvas) {
 // returns the scene's background color.
 func (scene *Scene) traceRay(r Ray, tmin, tmax float64) Color {
 	closest_t := math.Inf(1)
-	closest_sphere := Sphere{color: scene.bgColor}
-	for _, sphere := range scene.spheres {
+	var closest_sphere *Sphere
+
+	for i, sphere := range scene.spheres {
 		t1, t2 := r.IntersectSphere(sphere)
 		if t1 >= tmin && t1 <= tmax && t1 < closest_t {
 			closest_t = t1
-			closest_sphere = sphere
+			closest_sphere = &scene.spheres[i]
 		}
 		if t2 >= tmin && t2 <= tmax && t2 < closest_t {
 			closest_t = t2
-			closest_sphere = sphere
+			closest_sphere = &scene.spheres[i]
 		}
 	}
+
+	if closest_sphere == nil {
+		return scene.bgColor
+	}
+
 	return closest_sphere.color
 }
 
