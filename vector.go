@@ -10,7 +10,7 @@ func (a Vector) Dot(b Vector) float64 {
 	return a.X*b.X + a.Y*b.Y + a.Z*b.Z
 }
 
-// Minus returns the vector represented by b - a.
-func Minus(a, b Vector) Vector {
-	return Vector{b.X - a.X, b.Y - a.Y, b.Z - a.Z}
+// Minus returns the vector represented by a - b.
+func (a Vector) Minus(b Vector) Vector {
+	return Vector{a.X - b.X, a.Y - b.Y, a.Z - b.Z}
 }

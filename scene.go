@@ -43,7 +43,7 @@ type Ray struct {
 //   2. The ray is tangent to the sphere: t1 = t2
 //   3. The ray dos not hit the sphere: t1 = t1 = +infinity
 func (r *Ray) IntersectSphere(s Sphere) (float64, float64) {
-	oc := Minus(r.O, s.c)
+	oc := r.O.Minus(s.c)
 	k1 := r.D.Dot(r.D)
 	k2 := 2 * oc.Dot(r.D)
 	k3 := oc.Dot(oc) - s.r*s.r
@@ -105,5 +105,5 @@ func (scene *Scene) traceRay(r Ray, tmin, tmax float64) Color {
 // canvasToViewPort converts canvas coordinates to viewport coordinates.
 func canvasToViewPort(x, y float64, c Canvas) Vector {
 	fw, fh := float64(c.Width()), float64(c.Height())
-	return Vector{(x - fw/2) / fw, -(y - fh/2) / fh, 1}
+	return Vector{(x - fw/2) / fw, (y - fh/2) / fh, 1}
 }

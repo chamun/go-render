@@ -34,9 +34,9 @@ func main() {
 	defer f.Close()
 
 	scene := Scene{[]Sphere{
-		Sphere{Vector{0, 1, -3}, 1, red},
-		Sphere{Vector{2, 0, -4}, 1, blue},
-		Sphere{Vector{-2, 0, -4}, 1, green}},
+		Sphere{Vector{0, 1, 3}, 1, red},
+		Sphere{Vector{2, 0, 4}, 1, blue},
+		Sphere{Vector{-2, 0, 4}, 1, green}},
 		white}
 
 	r := image.Rectangle{image.Pt(0, 0), image.Pt(500, 500)}
