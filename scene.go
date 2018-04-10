@@ -58,9 +58,17 @@ func (r *Ray) IntersectSphere(s Sphere) (float64, float64) {
 	return t1, t2
 }
 
+type Light struct {
+	kind      string
+	intensity float64
+	position  Vector
+	direction Vector
+}
+
 type Scene struct {
 	spheres []Sphere
 	bgColor Color
+	lights  []Light
 }
 
 // Render renders the scene to Canvas c

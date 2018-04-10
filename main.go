@@ -37,7 +37,12 @@ func main() {
 		Sphere{Vector{0, 1, 3}, 1, red},
 		Sphere{Vector{2, 0, 4}, 1, blue},
 		Sphere{Vector{-2, 0, 4}, 1, green}},
-		white}
+		white,
+		[]Light{
+			Light{kind: "ambient", intensity: 0.2},
+			Light{kind: "point", intensity: 0.6, position: Vector{2, 1, 0}},
+			Light{kind: "directional", intensity: 0.2, direction: Vector{1, 4, 4}},
+		}}
 
 	r := image.Rectangle{image.Pt(0, 0), image.Pt(500, 500)}
 	img := image.NewRGBA(r)
