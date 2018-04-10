@@ -17,6 +17,11 @@ type Sphere struct {
 	color Color
 }
 
+// NormalAt returns the normal vector on point p as a unit vector
+func (s *Sphere) NormalAt(p Vector) Vector {
+	return p.Minus(s.c).Normalize()
+}
+
 // Color is a vector that implements the color.Color interface
 type Color Vector
 
@@ -29,10 +34,20 @@ func (c Color) RGBA() (uint32, uint32, uint32, uint32) {
 	return color.RGBA{r, g, b, 255}.RGBA()
 }
 
+// Mult returns the color represented by a multiplied by b
+func (a Color) Mult(b float64) Color {
+	return Color(Vector(a).Mult(b))
+}
+
 // Ray is the line that passes through point O in direction D
 type Ray struct {
 	O Vector
 	D Vector
+}
+
+// At returns the point at parameter t of the ray
+func (r *Ray) PointAt(t float64) Vector {
+	return r.O.Add(r.D.Mult(t))
 }
 
 // IntersectSphere calculates where ray r hits the sphere s. It returns t1
@@ -107,7 +122,33 @@ func (scene *Scene) traceRay(r Ray, tmin, tmax float64) Color {
 		return scene.bgColor
 	}
 
-	return closest_sphere.color
+	p := r.PointAt(closest_t)
+	n := closest_sphere.NormalAt(p)
+
+	return closest_sphere.color.Mult(scene.computeLight(p, n))
+}
+
+// computLight calculates the total brightness of point p given its normal
+// vector n.
+func (scene *Scene) computeLight(p, n Vector) float64 {
+	i := 0.0
+	for _, light := range scene.lights {
+		if light.kind == "ambient" {
+			i += light.intensity
+		} else {
+			var l Vector
+			if light.kind == "point" {
+				l = light.position.Minus(p)
+			} else { // light.kind == "directional"
+				l = light.direction
+			}
+			cos := n.Cos(l)
+			if cos > 0 {
+				i += light.intensity * cos
+			}
+		}
+	}
+	return i
 }
 
 // canvasToViewPort converts canvas coordinates to viewport coordinates.
