@@ -11,6 +11,7 @@ import (
 var red = Color{255, 0, 0}
 var green = Color{0, 255, 0}
 var blue = Color{0, 0, 255}
+var yellow = Color{255, 255, 0}
 var white = Color{255, 255, 255}
 
 type CanvasAdapter struct {
@@ -36,7 +37,8 @@ func main() {
 	scene := Scene{[]Sphere{
 		Sphere{Vector{0, 1, 3}, 1, red},
 		Sphere{Vector{2, 0, 4}, 1, blue},
-		Sphere{Vector{-2, 0, 4}, 1, green}},
+		Sphere{Vector{-2, 0, 4}, 1, green},
+		Sphere{Vector{0, 5001, 0}, 5000, yellow}},
 		white,
 		[]Light{
 			Light{kind: "ambient", intensity: 0.2},
