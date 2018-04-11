@@ -73,11 +73,38 @@ func (r *Ray) IntersectSphere(s Sphere) (float64, float64) {
 	return t1, t2
 }
 
-type Light struct {
-	kind      string
-	intensity float64
-	position  Vector
-	direction Vector
+type Light interface {
+	// ComputeLight calculates the total brightness of point p given its normal
+	// vector n.
+	ComputeLight(point, normal Vector) float64
+}
+
+type DirectionalLight struct {
+	Intensity float64
+	Direction Vector
+}
+
+func (light DirectionalLight) ComputeLight(_, normal Vector) float64 {
+	cos := normal.Cos(light.Direction)
+	return math.Max(light.Intensity*cos, 0)
+}
+
+type PointLight struct {
+	Intensity float64
+	Position  Vector
+}
+
+func (light PointLight) ComputeLight(point, normal Vector) float64 {
+	cos := normal.Cos(light.Position.Minus(point))
+	return math.Max(light.Intensity*cos, 0)
+}
+
+type AmbientLight struct {
+	Intensity float64
+}
+
+func (light AmbientLight) ComputeLight(_, _ Vector) float64 {
+	return light.Intensity
 }
 
 type Scene struct {
@@ -125,30 +152,12 @@ func (scene *Scene) traceRay(r Ray, tmin, tmax float64) Color {
 	p := r.PointAt(closest_t)
 	n := closest_sphere.NormalAt(p)
 
-	return closest_sphere.color.Mult(scene.computeLight(p, n))
-}
-
-// computLight calculates the total brightness of point p given its normal
-// vector n.
-func (scene *Scene) computeLight(p, n Vector) float64 {
-	i := 0.0
+	brightness := 0.0
 	for _, light := range scene.lights {
-		if light.kind == "ambient" {
-			i += light.intensity
-		} else {
-			var l Vector
-			if light.kind == "point" {
-				l = light.position.Minus(p)
-			} else { // light.kind == "directional"
-				l = light.direction
-			}
-			cos := n.Cos(l)
-			if cos > 0 {
-				i += light.intensity * cos
-			}
-		}
+		brightness += light.ComputeLight(p, n)
 	}
-	return i
+
+	return closest_sphere.color.Mult(brightness)
 }
 
 // canvasToViewPort converts canvas coordinates to viewport coordinates.
