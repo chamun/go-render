@@ -14,13 +14,23 @@ type Canvas interface {
 type Sphere struct {
 	c     Vector
 	r     float64
-	color color.Color
+	color Color
+}
+
+// NormalAt returns the normal vector on point p as a unit vector
+func (s *Sphere) NormalAt(p Vector) Vector {
+	return p.Minus(s.c).Normalize()
 }
 
 // Ray is the line that passes through point O in direction D
 type Ray struct {
 	O Vector
 	D Vector
+}
+
+// At returns the point at parameter t of the ray
+func (r *Ray) PointAt(t float64) Vector {
+	return r.O.Add(r.D.Mult(t))
 }
 
 // IntersectSphere calculates where ray r hits the sphere s. It returns t1
@@ -31,7 +41,7 @@ type Ray struct {
 //   2. The ray is tangent to the sphere: t1 = t2
 //   3. The ray dos not hit the sphere: t1 = t1 = +infinity
 func (r *Ray) IntersectSphere(s Sphere) (float64, float64) {
-	oc := Minus(r.O, s.c)
+	oc := r.O.Minus(s.c)
 	k1 := r.D.Dot(r.D)
 	k2 := 2 * oc.Dot(r.D)
 	k3 := oc.Dot(oc) - s.r*s.r
@@ -48,7 +58,8 @@ func (r *Ray) IntersectSphere(s Sphere) (float64, float64) {
 
 type Scene struct {
 	spheres []Sphere
-	bgColor color.Color
+	bgColor Color
+	lights  []Light
 }
 
 // Render renders the scene to Canvas c
@@ -67,25 +78,39 @@ func (scene *Scene) Render(c Canvas) {
 // traceRay returns the color of the object r hits given that the intersection
 // point lies on interval [tmin, tmax] of r. If there is no intersection, it
 // returns the scene's background color.
-func (scene *Scene) traceRay(r Ray, tmin, tmax float64) color.Color {
+func (scene *Scene) traceRay(r Ray, tmin, tmax float64) Color {
 	closest_t := math.Inf(1)
-	closest_sphere := Sphere{color: scene.bgColor}
-	for _, sphere := range scene.spheres {
+	var closest_sphere *Sphere
+
+	for i, sphere := range scene.spheres {
 		t1, t2 := r.IntersectSphere(sphere)
 		if t1 >= tmin && t1 <= tmax && t1 < closest_t {
 			closest_t = t1
-			closest_sphere = sphere
+			closest_sphere = &scene.spheres[i]
 		}
 		if t2 >= tmin && t2 <= tmax && t2 < closest_t {
 			closest_t = t2
-			closest_sphere = sphere
+			closest_sphere = &scene.spheres[i]
 		}
 	}
-	return closest_sphere.color
+
+	if closest_sphere == nil {
+		return scene.bgColor
+	}
+
+	p := r.PointAt(closest_t)
+	n := closest_sphere.NormalAt(p)
+
+	brightness := 0.0
+	for _, light := range scene.lights {
+		brightness += light.ComputeLight(p, n)
+	}
+
+	return closest_sphere.color.Mult(brightness)
 }
 
 // canvasToViewPort converts canvas coordinates to viewport coordinates.
 func canvasToViewPort(x, y float64, c Canvas) Vector {
 	fw, fh := float64(c.Width()), float64(c.Height())
-	return Vector{(x - fw/2) / fw, -(y - fh/2) / fh, 1}
+	return Vector{(x - fw/2) / fw, (y - fh/2) / fh, 1}
 }

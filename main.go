@@ -3,16 +3,10 @@ package main
 import (
 	"fmt"
 	"image"
-	"image/color"
 	"image/draw"
 	"image/png"
 	"os"
 )
-
-var red = color.RGBA{255, 0, 0, 255}
-var green = color.RGBA{0, 255, 0, 255}
-var blue = color.RGBA{0, 0, 255, 255}
-var white = color.RGBA{255, 255, 255, 255}
 
 type CanvasAdapter struct {
 	draw.Image
@@ -35,10 +29,16 @@ func main() {
 	defer f.Close()
 
 	scene := Scene{[]Sphere{
-		Sphere{Vector{0, 1, -3}, 1, red},
-		Sphere{Vector{2, 0, -4}, 1, blue},
-		Sphere{Vector{-2, 0, -4}, 1, green}},
-		white}
+		Sphere{Vector{0, 1, 3}, 1, red},
+		Sphere{Vector{2, 0, 4}, 1, blue},
+		Sphere{Vector{-2, 0, 4}, 1, green},
+		Sphere{Vector{0, 5001, 0}, 5000, yellow}},
+		white,
+		[]Light{
+			DirectionalLight{0.2, Vector{1, 4, 4}},
+			PointLight{0.6, Vector{2, 1, 0}},
+			AmbientLight{0.2},
+		}}
 
 	r := image.Rectangle{image.Pt(0, 0), image.Pt(500, 500)}
 	img := image.NewRGBA(r)
