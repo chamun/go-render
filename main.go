@@ -8,12 +8,6 @@ import (
 	"os"
 )
 
-var red = Color{255, 0, 0}
-var green = Color{0, 255, 0}
-var blue = Color{0, 0, 255}
-var yellow = Color{255, 255, 0}
-var white = Color{255, 255, 255}
-
 type CanvasAdapter struct {
 	draw.Image
 }
