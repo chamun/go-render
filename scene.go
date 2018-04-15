@@ -12,14 +12,14 @@ type Canvas interface {
 }
 
 type Sphere struct {
-	c     Vector
-	r     float64
-	color Color
+	Center Vector
+	Radius float64
+	Color  Color
 }
 
 // NormalAt returns the normal vector on point p as a unit vector
 func (s *Sphere) NormalAt(p Vector) Vector {
-	return p.Minus(s.c).Normalize()
+	return p.Minus(s.Center).Normalize()
 }
 
 // Ray is the line that passes through point O in direction D
@@ -41,10 +41,10 @@ func (r *Ray) PointAt(t float64) Vector {
 //   2. The ray is tangent to the sphere: t1 = t2
 //   3. The ray dos not hit the sphere: t1 = t1 = +infinity
 func (r *Ray) IntersectSphere(s Sphere) (float64, float64) {
-	oc := r.O.Minus(s.c)
+	oc := r.O.Minus(s.Center)
 	k1 := r.D.Dot(r.D)
 	k2 := 2 * oc.Dot(r.D)
-	k3 := oc.Dot(oc) - s.r*s.r
+	k3 := oc.Dot(oc) - s.Radius*s.Radius
 
 	discriminant := k2*k2 - 4*k1*k3
 	if discriminant < 0 {
@@ -106,7 +106,7 @@ func (scene *Scene) traceRay(r Ray, tmin, tmax float64) Color {
 		brightness += light.ComputeLight(p, n)
 	}
 
-	return closest_sphere.color.Mult(brightness)
+	return closest_sphere.Color.Mult(brightness)
 }
 
 // canvasToViewPort converts canvas coordinates to viewport coordinates.
