@@ -24,13 +24,13 @@ func (s *Sphere) NormalAt(p Vector) Vector {
 
 // Ray is the line that passes through point O in direction D
 type Ray struct {
-	O Vector
-	D Vector
+	Origin    Vector
+	Direction Vector
 }
 
 // At returns the point at parameter t of the ray
 func (r *Ray) PointAt(t float64) Vector {
-	return r.O.Add(r.D.Mult(t))
+	return r.Origin.Add(r.Direction.Mult(t))
 }
 
 // IntersectSphere calculates where ray r hits the sphere s. It returns t1
@@ -41,9 +41,9 @@ func (r *Ray) PointAt(t float64) Vector {
 //   2. The ray is tangent to the sphere: t1 = t2
 //   3. The ray dos not hit the sphere: t1 = t1 = +infinity
 func (r *Ray) IntersectSphere(s Sphere) (float64, float64) {
-	oc := r.O.Minus(s.Center)
-	k1 := r.D.Dot(r.D)
-	k2 := 2 * oc.Dot(r.D)
+	oc := r.Origin.Minus(s.Center)
+	k1 := r.Direction.Dot(r.Direction)
+	k2 := 2 * oc.Dot(r.Direction)
 	k3 := oc.Dot(oc) - s.Radius*s.Radius
 
 	discriminant := k2*k2 - 4*k1*k3
